@@ -14,29 +14,34 @@ class SandParticle(Particle):
         super().__init__("Sand", x, y, (194, 178, 128), 8)
 
     def Move(self, tiles, upTiles):
+        flag = False
         r = self.pos[0]
         c = self.pos[1]
+        xMov = yMov = 0
+
         if(upTiles[r][c] or r == len(tiles)-1):
             return tiles, upTiles
         
-        if(tiles[r+1][c]==None):
-            tiles[r+1][c] = self
-            tiles[r][c] = None
-            self.pos = (r+1, c)
-            upTiles[r+1][c] = True
+        elif(tiles[r+1][c]==None):
+            yMov = 1
+            flag = True
 
         elif(tiles[r+1][c-1]==None):
-            tiles[r+1][c-1] = self
-            tiles[r][c] = None
-            self.pos = (r+1, c-1)
-            upTiles[r+1][c-1] = True
+            yMov = 1
+            xMov = -1
+            flag = True
 
         elif(tiles[r+1][c+1]==None):
-            tiles[r+1][c+1] = self
-            tiles[r][c] = None
-            self.pos = (r+1, c+1)
-            upTiles[r+1][c+1] = True
+            yMov = 1
+            xMov = 1
+            flag = True
 
+        if(flag):
+            tiles[r+yMov][c+xMov] = self
+            tiles[r][c] = None
+            self.pos = (r+yMov, c+xMov)
+            upTiles[r+yMov][c+xMov] = True
+            upTiles[r][c] = False
 
         return tiles, upTiles
 

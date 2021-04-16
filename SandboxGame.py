@@ -15,7 +15,6 @@ PARTICLE_SIZE = 4
 current_time = pygame.time.get_ticks()
 
 def main(w, h):
-    global GAME_SPEED
 
     holding_mouse = False
     sParticle = "Sand"
@@ -104,7 +103,7 @@ def update_particles(tiles):
     #Keep track of which tiles have already been updated
     updatedTiles = [[False]*(WINDOW_WIDTH // PARTICLE_SIZE)]* (WINDOW_HEIGHT // PARTICLE_SIZE)
 
-    for row in range(0, len(tiles)):
+    for row in range(len(tiles)-1, -1, -1):
         for val in range(0, len(tiles[row])):
             if (tiles[row][val] != None):
                 tiles, updatedTiles = tiles[row][val].Move(tiles, updatedTiles)
