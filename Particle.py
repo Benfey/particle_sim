@@ -7,13 +7,14 @@ class Particle:
         self.color = pCol
         self.speed = speed
         self.timer = 0
-
-
-class SandParticle(Particle):
-    def __init__(self, x, y):
-        super().__init__("Sand", x, y, (194, 178, 128), 8)
-
+    
     def Move(self, tiles, upTiles):
+        if(self.timer < self.speed):
+            self.timer += 1
+            return tiles, upTiles
+        else:
+            self.timer = 0
+
         flag = False
         r = self.pos[0]
         c = self.pos[1]
@@ -45,23 +46,31 @@ class SandParticle(Particle):
 
         return tiles, upTiles
 
+
+class SandParticle(Particle):
+    def __init__(self, x, y):
+        super().__init__("Sand", x, y, (194, 178, 128), 4)
+
+    def Move(self, tiles, upTiles):
+        return super().Move(tiles, upTiles)
+
 class DirtParticle(Particle):
     def __init__(self, x, y):
         super().__init__("Dirt", x, y, (155, 118, 83), 20)
 
-    def Move(self, tiles):
-        return
+    def Move(self, tiles, upTiles):
+        return super().Move(tiles, upTiles)
 
 class SnowflakeParticle(Particle):
     def __init__(self, x, y):
         super().__init__("Snowflake", x, y, (0, 200, 200), 40)
 
-    def Move(self, tiles):
-        return
+    def Move(self, tiles, upTiles):
+        return super().Move(tiles, upTiles)
 
 class SmokeParticle(Particle):
     def __init__(self, x, y):
         super().__init__("Snowflake", x, y, (130, 130, 130), 40)
 
-    def Move(self, tiles):
-        return
+    def Move(self, tiles, upTiles):
+        return super().Move(tiles, upTiles)

@@ -73,12 +73,11 @@ def Update(holding_mouse, sParticle, tiles):
     return tiles
 
 def Render(screen, tiles, font, clock):
-    startTime = time.time()
+    screen.fill(Color.BLACK.value)
     for row in range(0, len(tiles)):
         for val in range(0, len(tiles[row])):
             if(tiles[row][val]==None):
-                rect = pygame.Rect(val*PARTICLE_SIZE, row*PARTICLE_SIZE, PARTICLE_SIZE, PARTICLE_SIZE)
-                pygame.draw.rect(screen, (0,0,0), rect)
+                pass
             else:
                 rect = pygame.Rect(val*PARTICLE_SIZE, row*PARTICLE_SIZE, PARTICLE_SIZE, PARTICLE_SIZE)
                 pygame.draw.rect(screen, tiles[row][val].color, rect)
@@ -87,7 +86,6 @@ def Render(screen, tiles, font, clock):
     fps = font.render(str(int(clock.get_fps())), True, (255,255,255))
     screen.blit(fps, (0, 0))
     pygame.display.flip()
-    print(time.time()-startTime)
     return screen
 
 def Reset(screen):
