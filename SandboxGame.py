@@ -15,10 +15,14 @@ PARTICLE_SIZE = 4
 current_time = pygame.time.get_ticks()
 
 def main(w, h):
+    pygame.init()
 
     holding_mouse = False
     sParticle = "Sand"
-    pygame.init()
+    
+    #FPS stuff
+    font = pygame.font.SysFont("Arial", 30)
+    #
 
     screen = pygame.display.set_mode((w, h))
     clock = pygame.time.Clock()
@@ -33,7 +37,7 @@ def main(w, h):
         #update
         tiles = Update(holding_mouse, sParticle, tiles)
         #render
-        screen = Render(screen, tiles)
+        screen = Render(screen, tiles, font, clock)
 
         clock.tick(GAME_SPEED)
 
@@ -68,7 +72,8 @@ def Update(holding_mouse, sParticle, tiles):
 
     return tiles
 
-def Render(screen, tiles):
+def Render(screen, tiles, font, clock):
+    startTime = time.time()
     for row in range(0, len(tiles)):
         for val in range(0, len(tiles[row])):
             if(tiles[row][val]==None):
@@ -78,7 +83,11 @@ def Render(screen, tiles):
                 rect = pygame.Rect(val*PARTICLE_SIZE, row*PARTICLE_SIZE, PARTICLE_SIZE, PARTICLE_SIZE)
                 pygame.draw.rect(screen, tiles[row][val].color, rect)
 
-    pygame.display.update()
+    #FPS Stuff
+    fps = font.render(str(int(clock.get_fps())), True, (255,255,255))
+    screen.blit(fps, (0, 0))
+    pygame.display.flip()
+    print(time.time()-startTime)
     return screen
 
 def Reset(screen):
