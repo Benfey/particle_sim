@@ -24,6 +24,14 @@ def main(w, h):
     font = pygame.font.SysFont("Arial", 30)
     #
 
+    #/timers
+    timers = {
+        "Sand": [0,2],
+        "Dirt": [0,4],
+        "Snowflake": [0,16],
+        "Smoke": [0,8]
+    }
+
     screen = pygame.display.set_mode((w, h))
     clock = pygame.time.Clock()
 
@@ -35,7 +43,7 @@ def main(w, h):
         #input
         screen, holding_mouse, sParticle, tiles = Input(screen, holding_mouse, sParticle, tiles)
         #update
-        tiles = Update(holding_mouse, sParticle, tiles)
+        tiles, timers = Update(holding_mouse, sParticle, tiles, timers)
         #render
         screen = Render(screen, tiles, font, clock)
 
@@ -48,12 +56,14 @@ def Input(screen, holding_mouse, sParticle, tiles):
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_r:
                 screen, tiles = Reset(screen)
-            if event.key == pygame.K_1:
+            elif event.key == pygame.K_1:
                 sParticle = "Sand"
-            if event.key == pygame.K_2:
+            elif event.key == pygame.K_2:
                 sParticle = "Dirt"
-            if event.key == pygame.K_3:
+            elif event.key == pygame.K_3:
                 sParticle = "Snowflake"
+            elif event.key == pygame.K_4:
+                sParticle = "Smoke"
         if event.type == pygame.MOUSEBUTTONDOWN:
             holding_mouse = True
         elif event.type == pygame.MOUSEBUTTONUP:
@@ -63,14 +73,18 @@ def Input(screen, holding_mouse, sParticle, tiles):
 
     return screen, holding_mouse, sParticle, tiles
 
-def Update(holding_mouse, sParticle, tiles):
+def Update(holding_mouse, sParticle, tiles, timers):
     # Spawn particles
     if holding_mouse:
         tiles = spawn_particle(sParticle, tiles)
 
-    tiles = update_particles(tiles)
+    tiles = update_particles(tiles, timers)
 
-    return tiles
+    #Update timers
+    for key, val in timers.items():
+        val[0] = (val[0]+1) % val[1]
+
+    return tiles, timers
 
 def Render(screen, tiles, font, clock):
     screen.fill(Color.BLACK.value)
@@ -106,14 +120,18 @@ def spawn_particle(sParticle, tiles):
     
     return tiles
 
-def update_particles(tiles):
+def update_particles(tiles, timers):
     #Keep track of which tiles have already been updated
     updatedTiles = [[False]*(WINDOW_WIDTH // PARTICLE_SIZE)]* (WINDOW_HEIGHT // PARTICLE_SIZE)
 
     for row in range(len(tiles)-1, -1, -1):
         for val in range(0, len(tiles[row])):
-            if (tiles[row][val] != None):
-                tiles, updatedTiles = tiles[row][val].Move(tiles, updatedTiles)
+            if (tiles[row][val] != None and tiles[row][val].pType != "Smoke"):
+                tiles, updatedTiles = tiles[row][val].Move(tiles, updatedTiles, timers)
+    for row in range(len(tiles)):
+        for val in range(0, len(tiles[row])):
+            if (tiles[row][val] != None and tiles[row][val].pType == "Smoke"):
+                tiles, updatedTiles = tiles[row][val].Move(tiles, updatedTiles, timers)
     return tiles
     
 
@@ -136,6 +154,8 @@ def SelectedParticle(pType, x, y):
         return DirtParticle(x, y)
     elif(pType == "Snowflake"):
         return SnowflakeParticle(x, y)
+    elif(pType == "Smoke"):
+        return SmokeParticle(x, y)        
     return None
 
 if __name__ == "__main__":
