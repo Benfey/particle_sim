@@ -27,9 +27,15 @@ def main(w, h):
     #/timers
     timers = {
         "Sand": [0,2],
+        "ReverseSand": [0,2],
         "Dirt": [0,4],
-        "Snowflake": [0,16],
-        "Smoke": [0,8]
+        "Snowflake": [0,8],
+        "Smoke": [0,4],
+        "Water": [0,2],
+        "Stone": [0,1],
+        "Fire": [0,2],
+        "Eraser": [0,1]
+
     }
 
     screen = pygame.display.set_mode((w, h))
@@ -64,6 +70,16 @@ def Input(screen, holding_mouse, sParticle, tiles):
                 sParticle = "Snowflake"
             elif event.key == pygame.K_4:
                 sParticle = "Smoke"
+            elif event.key == pygame.K_5:
+                sParticle = "Water"
+            elif event.key == pygame.K_6:
+                sParticle = "Stone"
+            elif event.key == pygame.K_7:
+                sParticle = "Fire"
+            elif event.key == pygame.K_8:
+                sParticle = "ReverseSand"
+            elif event.key == pygame.K_9:
+                sParticle = "Eraser"
         if event.type == pygame.MOUSEBUTTONDOWN:
             holding_mouse = True
         elif event.type == pygame.MOUSEBUTTONUP:
@@ -113,8 +129,9 @@ def spawn_particle(sParticle, tiles):
     col = x // PARTICLE_SIZE
         
     # If particle already on tile, do nothing
-    if tiles[row][col] != None:
-        pass
+    if (tiles[row][col] != None):
+        if(sParticle == "Eraser"):
+            tiles[row][col] = None
     else: # Spawn a particle
         tiles[row][col] = SelectedParticle(sParticle, row, col)
     
@@ -122,16 +139,12 @@ def spawn_particle(sParticle, tiles):
 
 def update_particles(tiles, timers):
     #Keep track of which tiles have already been updated
-    updatedTiles = [[False]*(WINDOW_WIDTH // PARTICLE_SIZE)]* (WINDOW_HEIGHT // PARTICLE_SIZE)
+    updatedTiles = [[False for i in range(WINDOW_WIDTH // PARTICLE_SIZE)] for j in range(WINDOW_HEIGHT // PARTICLE_SIZE)]
 
-    for row in range(len(tiles)-1, -1, -1):
-        for val in range(0, len(tiles[row])):
-            if (tiles[row][val] != None and tiles[row][val].pType != "Smoke"):
-                tiles, updatedTiles = tiles[row][val].Move(tiles, updatedTiles, timers)
-    for row in range(len(tiles)):
-        for val in range(0, len(tiles[row])):
-            if (tiles[row][val] != None and tiles[row][val].pType == "Smoke"):
-                tiles, updatedTiles = tiles[row][val].Move(tiles, updatedTiles, timers)
+    for row in range(1, len(tiles)+1):
+        for val in range(0, len(tiles[-row])):
+            if (tiles[-row][val] != None):
+                tiles, updatedTiles = tiles[-row][val].Move(tiles, updatedTiles, timers)
     return tiles
     
 
@@ -155,7 +168,17 @@ def SelectedParticle(pType, x, y):
     elif(pType == "Snowflake"):
         return SnowflakeParticle(x, y)
     elif(pType == "Smoke"):
-        return SmokeParticle(x, y)        
+        return SmokeParticle(x, y)     
+    elif(pType == "Water"):
+        return WaterParticle(x, y)     
+    elif(pType == "Stone"):
+        return StoneParticle(x, y)  
+    elif(pType == "Fire"):
+        return FireParticle(x, y)   
+    elif(pType == "ReverseSand"):
+        return ReverseSandParticle(x, y)  
+    elif(pType == "Eraser"):
+        return None       
     return None
 
 if __name__ == "__main__":
